@@ -22,7 +22,7 @@ public class WelcomeScreen extends JFrame {
 
         // Background Panel with Image
         JPanel backgroundPanel = new JPanel() {
-            private Image backgroundImage = new ImageIcon("connectfour\\src\\images\\WIN_20241216_12_16_49_Pro.jpg").getImage(); // Replace with your image path
+            private Image backgroundImage = new ImageIcon("connectfour\\src\\images\\A vibrant and minimalistic welcome screen for a Connect Four game with a fruit theme, without any text.png").getImage(); // Replace with your image path
 
             @Override
             protected void paintComponent(Graphics g) {
@@ -45,8 +45,9 @@ public class WelcomeScreen extends JFrame {
         startButton.setBounds(250, 120, 100, 40);
         startButton.addActionListener(e -> {
             stopMusic();
-            ConnectFour.play(); // Asumsikan metode ini ada
-            dispose();
+            ConnectFour.play(); 
+            
+            playMusic();
         });
         backgroundPanel.add(startButton);
 
