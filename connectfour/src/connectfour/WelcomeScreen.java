@@ -46,7 +46,7 @@ public class WelcomeScreen extends JFrame {
         startButton.addActionListener(e -> {
             stopMusic();
             ConnectFour.play(); 
-            
+            dispose();//welcome screen ditutup
             playMusic();
         });
         backgroundPanel.add(startButton);
