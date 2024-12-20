@@ -16,7 +16,7 @@ public class ConnectFour extends JPanel {
    private static final long serialVersionUID = 1L; // to prevent serializable warning
 
    // Define named constants for the drawing graphics
-   public static final String TITLE = "Tic Tac Toe";
+   public static final String TITLE = "Connect Four";
    public static final Color COLOR_BG = Color.WHITE;
    public static final Color COLOR_BG_STATUS = new Color(216, 216, 216);
    public static final Color COLOR_CROSS = new Color(239, 105, 80); // Red #EF6950
@@ -56,7 +56,13 @@ public class ConnectFour extends JPanel {
                   }
                }
             } else {
-               newGame(); // Restart the game
+               if (currentState == State.CROSS_WON) {
+                  showWinnerDialog("Cross Wins!");
+               } else if (currentState == State.NOUGHT_WON) {
+                  showWinnerDialog("Nought Wins!");
+               } else if (currentState == State.DRAW) {
+                  showWinnerDialog("It's a Draw!");
+               }
             }
             repaint();
          }
@@ -122,6 +128,22 @@ public class ConnectFour extends JPanel {
          statusBar.setForeground(Color.RED);
          statusBar.setText("'O' Won! Click to play again.");
          SoundEffect.EXPLODE.play();
+      }
+   }
+
+   private void showWinnerDialog(String message) {
+      int response = JOptionPane.showOptionDialog(this,
+            message + "\nDo you want to play again?","Game Over",
+            JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, 
+            null, new Object[] {"Yes", "No"}, "Yes"); 
+
+      if (response == JOptionPane.YES_OPTION) {
+         newGame();
+         currentState = State.PLAYING;
+         currentPlayer = Seed.CROSS;
+         repaint();
+      } else {
+         System.exit(0);
       }
    }
 
