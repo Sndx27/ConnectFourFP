@@ -57,9 +57,9 @@ public class ConnectFour extends JPanel {
                   }
               } else {
                   if (currentState == State.CROSS_WON) {
-                      showWinnerDialog("Cross Wins!");
+                      showWinnerDialog("Yellow Wins!");
                   } else if (currentState == State.NOUGHT_WON) {
-                      showWinnerDialog("Nought Wins!");
+                      showWinnerDialog("Blue Wins!");
                   } else if (currentState == State.DRAW) {
                       showWinnerDialog("It's a Draw!");
                   }
@@ -114,37 +114,78 @@ public class ConnectFour extends JPanel {
       // Print status-bar message
       if (currentState == State.PLAYING) {
          statusBar.setForeground(Color.BLACK);
-         statusBar.setText((currentPlayer == Seed.CROSS) ? "X's Turn" : "O's Turn");
+         statusBar.setText((currentPlayer == Seed.CROSS) ? "Yellow's Turn" : "Blue's Turn");
       } else if (currentState == State.DRAW) {
          statusBar.setForeground(Color.RED);
          statusBar.setText("It's a Draw! Click to play again.");
          SoundEffect.DIE.play();
       } else if (currentState == State.CROSS_WON) {
          statusBar.setForeground(Color.RED);
-         statusBar.setText("'X' Won! Click to play again.");
+         statusBar.setText("'Yellow' Won! Click to play again.");
          SoundEffect.EXPLODE.play();
       } else if (currentState == State.NOUGHT_WON) {
          statusBar.setForeground(Color.RED);
-         statusBar.setText("'O' Won! Click to play again.");
+         statusBar.setText("'Blue' Won! Click to play again.");
          SoundEffect.EXPLODE.play();
       }
    }
 
    private void showWinnerDialog(String message) {
-      int response = JOptionPane.showOptionDialog(this,
-            message + "\nDo you want to play again?","Game Over",
-            JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, 
-            null, new Object[] {"Yes", "No"}, "Yes"); 
-
-      if (response == JOptionPane.YES_OPTION) {
-         newGame();
-         currentState = State.PLAYING;
-         currentPlayer = Seed.CROSS;
-         repaint();
-      } else {
-         System.exit(0);
-      }
-   }
+      // Create a custom dialog for modern aesthetics
+      JDialog endGameDialog = new JDialog((Frame) null, "Game Over", true);
+      endGameDialog.setSize(400, 200);
+      endGameDialog.setLocationRelativeTo(this);
+      endGameDialog.setLayout(new BorderLayout());
+  
+      // Header panel with message
+      JPanel headerPanel = new JPanel();
+      headerPanel.setBackground(new Color(50, 50, 50));
+      JLabel messageLabel = new JLabel("<html><div style='text-align: center;'>" + message + "<br>What would you like to do?</div></html>");
+      messageLabel.setFont(new Font("Arial", Font.BOLD, 16));
+      messageLabel.setForeground(Color.WHITE);
+      messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+      headerPanel.add(messageLabel);
+  
+      // Button panel for options
+      JPanel buttonPanel = new JPanel();
+      buttonPanel.setBackground(new Color(30, 30, 30));
+      buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
+  
+      JButton newGameButton = new JButton("New Game");
+      newGameButton.setFont(new Font("Arial", Font.BOLD, 14));
+      newGameButton.setBackground(new Color(50, 200, 50));
+      newGameButton.setForeground(Color.WHITE);
+      newGameButton.setFocusPainted(false);
+      newGameButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+      newGameButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+  
+      JButton exitButton = new JButton("Exit");
+      exitButton.setFont(new Font("Arial", Font.BOLD, 14));
+      exitButton.setBackground(new Color(200, 50, 50));
+      exitButton.setForeground(Color.WHITE);
+      exitButton.setFocusPainted(false);
+      exitButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+      exitButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+  
+      newGameButton.addActionListener(e -> {
+          endGameDialog.dispose(); // Close dialog
+          initGame();
+          newGame(); // Reset game
+          repaint(); // Refresh game board
+      });
+  
+      exitButton.addActionListener(e -> System.exit(0));
+  
+      buttonPanel.add(newGameButton);
+      buttonPanel.add(exitButton);
+  
+      // Add panels to dialog
+      endGameDialog.add(headerPanel, BorderLayout.CENTER);
+      endGameDialog.add(buttonPanel, BorderLayout.SOUTH);
+  
+      // Display the dialog
+      endGameDialog.setVisible(true);
+  }
 
    /** The entry "main" method */
    public static void play() {
