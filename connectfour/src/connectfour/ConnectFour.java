@@ -7,6 +7,7 @@ package connectfour;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
 /**
  * Tic-Tac-Toe: Two-player Graphic version with better OO design.
  * The Board and Cell classes are separated in their own classes.
@@ -18,15 +19,15 @@ public class ConnectFour extends JPanel {
    public static final String TITLE = "Tic Tac Toe";
    public static final Color COLOR_BG = Color.WHITE;
    public static final Color COLOR_BG_STATUS = new Color(216, 216, 216);
-   public static final Color COLOR_CROSS = new Color(239, 105, 80);  // Red #EF6950
+   public static final Color COLOR_CROSS = new Color(239, 105, 80); // Red #EF6950
    public static final Color COLOR_NOUGHT = new Color(64, 154, 225); // Blue #409AE1
    public static final Font FONT_STATUS = new Font("OCR A Extended", Font.PLAIN, 14);
 
    // Define game objects
-   private Board board;         // the game board
-   private State currentState;  // the current state of the game
-   private Seed currentPlayer;  // the current player
-   private JLabel statusBar;    // for displaying status message
+   private Board board; // the game board
+   private State currentState; // the current state of the game
+   private Seed currentPlayer; // the current player
+   private JLabel statusBar; // for displaying status message
 
    /** Constructor to setup the UI and game components */
    public ConnectFour() {
@@ -34,7 +35,7 @@ public class ConnectFour extends JPanel {
       // This JPanel fires MouseEvent
       super.addMouseListener(new MouseAdapter() {
          @Override
-         public void mouseClicked(MouseEvent e) {  // mouse-clicked handler
+         public void mouseClicked(MouseEvent e) {
             int mouseX = e.getX();
             int mouseY = e.getY();
             // Get the row and column clicked
@@ -42,32 +43,22 @@ public class ConnectFour extends JPanel {
             int col = mouseX / Cell.SIZE;
 
             if (currentState == State.PLAYING) {
-                SoundEffect.EAT_FOOD.play();
-                if (col >= 0 && col < Board.COLS) {
-                    // Look for an empty cell starting from the bottom row
-                    for (int rowI = Board.ROWS - 1; rowI >= 0; rowI--) {
-                        if (board.cells[rowI][col].content == Seed.NO_SEED) {
-                            board.cells[rowI][col].content = currentPlayer; // Make a move
-                            board.stepGame(currentPlayer, rowI, col); // update state
-                            // Switch player
-                            currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
-                            break;
-                        }
-                    }
-                }
-//               if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
-//                     && board.cells[row][col].content == Seed.NO_SEED) {
-//                  // Update cells[][] and return the new game state after the move
-//                  currentState = board.stepGame(currentPlayer, row, col);
-//                  // Switch player
-//                  currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
-//               }
-            } else {        // game over
-               newGame();  // restart the game
-               
+               SoundEffect.EAT_FOOD.play();
+               if (col >= 0 && col < Board.COLS) {
+                  // Look for an empty cell starting from the bottom row
+                  for (int rowI = Board.ROWS - 1; rowI >= 0; rowI--) {
+                     if (board.cells[rowI][col].content == Seed.NO_SEED) {
+                        currentState = board.stepGame(currentPlayer, rowI, col); // Update state
+                        // Switch player
+                        currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+                        break;
+                     }
+                  }
+               }
+            } else {
+               newGame(); // Restart the game
             }
-            // Refresh the drawing canvas
-            repaint();  // Callback paintComponent().
+            repaint();
          }
       });
 
@@ -83,7 +74,7 @@ public class ConnectFour extends JPanel {
       super.setLayout(new BorderLayout());
       super.add(statusBar, BorderLayout.PAGE_END); // same as SOUTH
       super.setPreferredSize(new Dimension(Board.CANVAS_WIDTH, Board.CANVAS_HEIGHT + 30));
-            // account for statusBar in height
+      // account for statusBar in height
       super.setBorder(BorderFactory.createLineBorder(COLOR_BG_STATUS, 2, false));
 
       // Set up Game
@@ -93,7 +84,7 @@ public class ConnectFour extends JPanel {
 
    /** Initialize the game (run once) */
    public void initGame() {
-      board = new Board();  // allocate the game-board
+      board = new Board(); // allocate the game-board
    }
 
    /** Reset the game-board contents and the current-state, ready for new game */
@@ -103,17 +94,17 @@ public class ConnectFour extends JPanel {
             board.cells[row][col].content = Seed.NO_SEED; // all cells empty
          }
       }
-      currentPlayer = Seed.CROSS;    // cross plays first
-      currentState = State.PLAYING;  // ready to play
+      currentPlayer = Seed.CROSS; // cross plays first
+      currentState = State.PLAYING; // ready to play
    }
 
    /** Custom painting codes on this JPanel */
    @Override
-   public void paintComponent(Graphics g) {  // Callback via repaint()
+   public void paintComponent(Graphics g) { // Callback via repaint()
       super.paintComponent(g);
       setBackground(COLOR_BG); // set its background color
 
-      board.paint(g);  // ask the game board to paint itself
+      board.paint(g); // ask the game board to paint itself
 
       // Print status-bar message
       if (currentState == State.PLAYING) {
@@ -145,7 +136,7 @@ public class ConnectFour extends JPanel {
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.pack();
             frame.setLocationRelativeTo(null); // center the application window
-            frame.setVisible(true);            // show it
+            frame.setVisible(true); // show it
          }
       });
    }

@@ -4,14 +4,14 @@
  */
 package connectfour;
 import java.awt.*;
+
 /**
  * The Board class models the ROWS-by-COLS game board.
  */
 public class Board {
-   // Define named constants
+   // Updated constants for a 6x7 grid
    public static final int ROWS = 6;  // ROWS x COLS cells
    public static final int COLS = 7;
-   // Define named constants for drawing
    public static final int CANVAS_WIDTH = Cell.SIZE * COLS;  // the drawing canvas
    public static final int CANVAS_HEIGHT = Cell.SIZE * ROWS;
    public static final int GRID_WIDTH = 8;  // Grid-line's width
@@ -19,93 +19,136 @@ public class Board {
    public static final Color COLOR_GRID = Color.LIGHT_GRAY;  // grid lines
    public static final int Y_OFFSET = 1;  // Fine tune for better display
 
-   // Define properties (package-visible)
-   /** Composes of 2D array of ROWS-by-COLS Cell instances */
-   Cell[][] cells;
+   // Define properties
+   Cell[][] cells; // 2D array of ROWS-by-COLS Cell instances
 
    /** Constructor to initialize the game board */
    public Board() {
       initGame();
    }
 
-   /** Initialize the game objects (run once) */
+   /** Initialize the game board */
    public void initGame() {
-      cells = new Cell[ROWS][COLS]; // allocate the array
+      cells = new Cell[ROWS][COLS];
       for (int row = 0; row < ROWS; ++row) {
          for (int col = 0; col < COLS; ++col) {
-            // Allocate element of the array
             cells[row][col] = new Cell(row, col);
-               // Cells are initialized in the constructor
          }
       }
    }
 
-   /** Reset the game board, ready for new game */
+   /** Reset the game board, ready for a new game */
    public void newGame() {
       for (int row = 0; row < ROWS; ++row) {
          for (int col = 0; col < COLS; ++col) {
-            cells[row][col].newGame(); // clear the cell content
+            cells[row][col].newGame();
          }
       }
    }
 
    /**
-    *  The given player makes a move on (selectedRow, selectedCol).
-    *  Update cells[selectedRow][selectedCol]. Compute and return the
-    *  new game state (PLAYING, DRAW, CROSS_WON, NOUGHT_WON).
+    * Drop the player's seed in the selected column, ignoring the row parameter.
+    * @return The new game state (PLAYING, DRAW, CROSS_WON, NOUGHT_WON)
     */
-   public State stepGame(Seed player, int selectedRow, int selectedCol) {
-      // Update game board
-      cells[selectedRow][selectedCol].content = player;
-
-      // Compute and return the new game state
-      if (cells[selectedRow][0].content == player  // 3-in-the-row
-                && cells[selectedRow][1].content == player
-                && cells[selectedRow][2].content == player
-             || cells[0][selectedCol].content == player // 3-in-the-column
-                && cells[1][selectedCol].content == player
-                && cells[2][selectedCol].content == player
-             || selectedRow == selectedCol     // 3-in-the-diagonal
-                && cells[0][0].content == player
-                && cells[1][1].content == player
-                && cells[2][2].content == player
-             || selectedRow + selectedCol == 2 // 3-in-the-opposite-diagonal
-                && cells[0][2].content == player
-                && cells[1][1].content == player
-                && cells[2][0].content == player) {
-         return (player == Seed.CROSS) ? State.CROSS_WON : State.NOUGHT_WON;
-      } else {
-         // Nobody win. Check for DRAW (all cells occupied) or PLAYING.
-         for (int row = 0; row < ROWS; ++row) {
-            for (int col = 0; col < COLS; ++col) {
-               if (cells[row][col].content == Seed.NO_SEED) {
-                  return State.PLAYING; // still have empty cells
+    public State stepGame(Seed player, int selectedRow, int selectedCol) {
+      // Drop to the lowest available row in the selected column
+      if (selectedCol >= 0 && selectedCol < COLS) {
+         for (int row = ROWS - 1; row >= 0; row--) { // Start from the bottom
+            if (cells[row][selectedCol].content == Seed.NO_SEED) {
+               cells[row][selectedCol].content = player;
+   
+               if (hasWon(player, row, selectedCol)) {
+                  return (player == Seed.CROSS) ? State.CROSS_WON : State.NOUGHT_WON;
                }
+   
+               boolean draw = true;
+               for (int r = 0; r < ROWS; ++r) {
+                  for (int c = 0; c < COLS; ++c) {
+                     if (cells[r][c].content == Seed.NO_SEED) {
+                        draw = false;
+                        break;
+                     }
+                  }
+               }
+   
+               return draw ? State.DRAW : State.PLAYING;
             }
          }
-         return State.DRAW; // no empty cell, it's a draw
       }
+      return State.PLAYING;
    }
+   
 
-   /** Paint itself on the graphics canvas, given the Graphics context */
+    public boolean hasWon(Seed theSeed, int rowSelected, int colSelected) {
+      // Check horizontally (row)
+      int count = 0;
+      for (int col = 0; col < COLS; ++col) {
+         if (cells[rowSelected][col].content == theSeed) {
+            count++;
+            if (count == 4) return true;
+         } else {
+            count = 0;
+         }
+      }
+   
+      // Check vertically (column)
+      count = 0;
+      for (int row = 0; row < ROWS; ++row) {
+         if (cells[row][colSelected].content == theSeed) {
+            count++;
+            if (count == 4) return true;
+         } else {
+            count = 0;
+         }
+      }
+   
+      // Check diagonal (\ direction)
+      count = 0;
+      for (int offset = -3; offset <= 3; ++offset) { // -3 to +3 to check 4 consecutive
+         int r = rowSelected + offset;
+         int c = colSelected + offset;
+         if (r >= 0 && r < ROWS && c >= 0 && c < COLS && cells[r][c].content == theSeed) {
+            count++;
+            if (count == 4) return true;
+         } else {
+            count = 0;
+         }
+      }
+   
+      // Check anti-diagonal (/ direction)
+      count = 0;
+      for (int offset = -3; offset <= 3; ++offset) {
+         int r = rowSelected + offset;
+         int c = colSelected - offset;
+         if (r >= 0 && r < ROWS && c >= 0 && c < COLS && cells[r][c].content == theSeed) {
+            count++;
+            if (count == 4) return true;
+         } else {
+            count = 0;
+         }
+      }
+   
+      return false; // No 4-in-a-line found
+   }
+   
+
+   /** Paint the board */
    public void paint(Graphics g) {
       // Draw the grid-lines
       g.setColor(COLOR_GRID);
       for (int row = 1; row < ROWS; ++row) {
          g.fillRoundRect(0, Cell.SIZE * row - GRID_WIDTH_HALF,
-               CANVAS_WIDTH - 1, GRID_WIDTH,
-               GRID_WIDTH, GRID_WIDTH);
+               CANVAS_WIDTH - 1, GRID_WIDTH, GRID_WIDTH, GRID_WIDTH);
       }
       for (int col = 1; col < COLS; ++col) {
          g.fillRoundRect(Cell.SIZE * col - GRID_WIDTH_HALF, 0 + Y_OFFSET,
-               GRID_WIDTH, CANVAS_HEIGHT - 1,
-               GRID_WIDTH, GRID_WIDTH);
+               GRID_WIDTH, CANVAS_HEIGHT - 1, GRID_WIDTH, GRID_WIDTH);
       }
 
-      // Draw all the cells
+      // Draw all cells
       for (int row = 0; row < ROWS; ++row) {
          for (int col = 0; col < COLS; ++col) {
-            cells[row][col].paint(g);  // ask the cell to paint itself
+            cells[row][col].paint(g);
          }
       }
    }
