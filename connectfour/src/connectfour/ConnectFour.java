@@ -5,12 +5,7 @@
  * Group #7
  * 1 - 5026231066 - Burju Ferdinand Harianja
  * 2 - 5026231132 - Clay Amsal Sebastian Hutabarat
- * 3 - 5026213181 - Sandythia Lova Ramadhani Krisnaprana
- */
-
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ * 3 - 5026213181 - Sandythia Lova Ramadhani Krisnaprana
  */
 package connectfour;
 
@@ -94,7 +89,7 @@ public class ConnectFour extends JPanel {
                          if (currentState == State.CROSS_WON) {
                              showWinnerDialog("Yellow Wins!");
                          } else if (currentState == State.NOUGHT_WON) {
-                             showWinnerDialog("Blue Wins!");
+                             showWinnerDialog("Red Wins!");
                          } else if (currentState == State.DRAW) {
                              showWinnerDialog("It's a Draw!");
                          }
@@ -162,7 +157,7 @@ public class ConnectFour extends JPanel {
       // Print status-bar message
       if (currentState == State.PLAYING) {
          statusBar.setForeground(Color.BLACK);
-         statusBar.setText((currentPlayer == Seed.CROSS) ? "Yellow's Turn" : "Blue's Turn");
+         statusBar.setText((currentPlayer == Seed.CROSS) ? "Yellow's Turn" : "Red's Turn");
       } else if (currentState == State.DRAW) {
          statusBar.setForeground(Color.RED);
          statusBar.setText("It's a Draw! Click to play again.");
@@ -173,7 +168,7 @@ public class ConnectFour extends JPanel {
          SoundEffect.EXPLODE.play();
       } else if (currentState == State.NOUGHT_WON) {
          statusBar.setForeground(Color.RED);
-         statusBar.setText("'Blue' Won! Click to play again.");
+         statusBar.setText("'Red' Won! Click to play again.");
          SoundEffect.EXPLODE.play();
       }
    }

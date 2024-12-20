@@ -5,9 +5,8 @@
  * Group #7
  * 1 - 5026231066 - Burju Ferdinand Harianja
  * 2 - 5026231132 - Clay Amsal Sebastian Hutabarat
- * 3 - 5026213181 - Sandythia Lova Ramadhani Krisnaprana
- */
-
+ * 3 - 5026213181 - Sandythia Lova Ramadhani Krisnaprana
+ */
 package connectfour;
 
 import java.awt.*;
@@ -23,7 +22,7 @@ public class WelcomeScreen extends JFrame {
     public WelcomeScreen() {
         setTitle("Connect Four - Welcome");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 400);
+        setSize(650, 700);
         setLocationRelativeTo(null);
 
         // Lokasi selalu di tengah layar
@@ -36,7 +35,7 @@ public class WelcomeScreen extends JFrame {
 
         // Background Panel with Tic Tac Toe theme
         JPanel backgroundPanel = new JPanel() {
-            private Image backgroundImage = new ImageIcon("connectfour\\src\\images\\WhatsApp Image 2024-12-20 at 17.28.16_a37d46a2.jpg").getImage(); // Replace with your image path
+            private Image backgroundImage = new ImageIcon("connectfour\\src\\images\\BG1.png").getImage(); // Replace with your image path
 
             @Override
             protected void paintComponent(Graphics g) {
