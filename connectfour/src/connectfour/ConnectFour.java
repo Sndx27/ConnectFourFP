@@ -34,38 +34,76 @@ public class ConnectFour extends JPanel {
    public ConnectFour() {
       // This JPanel fires MouseEvent
       super.addMouseListener(new MouseAdapter() {
-          @Override
-          public void mouseClicked(MouseEvent e) {
-              int mouseX = e.getX();
-              int mouseY = e.getY();
-              // Get the row and column clicked
-              int row = mouseY / Cell.SIZE;
-              int col = mouseX / Cell.SIZE;
-  
-              if (currentState == State.PLAYING) {
-                  SoundEffect.EAT_FOOD.play();
-                  if (col >= 0 && col < Board.COLS) {
-                      // Look for an empty cell starting from the bottom row
-                      for (int rowI = Board.ROWS - 1; rowI >= 0; rowI--) {
-                          if (board.cells[rowI][col].content == Seed.NO_SEED) {
-                              currentState = board.stepGame(currentPlayer, rowI, col); // Update state
-                              // Switch player
-                              currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
-                              break;
-                          }
-                      }
-                  }
-              } else {
-                  if (currentState == State.CROSS_WON) {
-                      showWinnerDialog("Yellow Wins!");
-                  } else if (currentState == State.NOUGHT_WON) {
-                      showWinnerDialog("Blue Wins!");
-                  } else if (currentState == State.DRAW) {
-                      showWinnerDialog("It's a Draw!");
-                  }
-              }
-              repaint();
-          }
+         @Override
+         public void mouseClicked(MouseEvent e) {
+             int mouseX = e.getX() - 65;
+             int mouseY = e.getY() + 30;
+         
+             // Hitung kolom dan baris berdasarkan posisi klik
+             int col = mouseX / Cell.SIZE; // Kolom berdasarkan mouseX
+             int row = mouseY / Cell.SIZE; // Baris berdasarkan mouseY
+         
+             // Pastikan klik berada dalam grid
+             if (col >= 0 && col < Board.COLS && row >= 0 && row < Board.ROWS) {
+                 // Hitung pusat lingkaran
+                 int offsetRight = 10; // Tambahkan offset untuk memperluas ke kanan
+                 int centerX = (col * Cell.SIZE) + (Cell.SIZE / 2); // Pusat X dengan bias ke kanan
+                 int centerY = (row * Cell.SIZE) + (Cell.SIZE / 2); // Pusat Y tetap
+                 int radius = (Cell.SIZE / 2); // Radius lingkaran
+                 int tolerance = 20; // Tambahkan toleransi untuk memperluas area valid
+                 int adjustedRadius = radius + tolerance; // Radius dengan toleransi
+         
+                 // Perluas radius hanya ke kanan
+                 if (mouseX > centerX) {
+                     adjustedRadius += 0; // Tambahkan radius untuk area kanan
+                 }
+         
+                 // Debugging: Tampilkan nilai koordinat
+                 System.out.println("Mouse X: " + mouseX + ", Mouse Y: " + mouseY);
+                 System.out.println("Center X: " + centerX + ", Center Y: " + centerY + ", Adjusted Radius: " + adjustedRadius);
+         
+                 // Validasi apakah klik berada di dalam lingkaran yang diperluas
+                 if (Math.pow(mouseX - centerX, 2) + Math.pow(mouseY - centerY, 2) <= Math.pow(adjustedRadius, 2)) {
+                     // Klik valid, lakukan aksi permainan
+                     if (currentState == State.PLAYING) {
+                         SoundEffect.EAT_FOOD.play();
+         
+                         // Cari cell kosong dari bawah ke atas di kolom yang diklik
+                         for (int rowI = Board.ROWS - 1; rowI >= 0; rowI--) {
+                             if (board.cells[rowI][col].content == Seed.NO_SEED) {
+                                 // Perbarui state permainan
+                                 currentState = board.stepGame(currentPlayer, rowI, col);
+         
+                                 // Ganti pemain
+                                 currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+                                 break;
+                             }
+                         }
+                     } else {
+                         // Tampilkan hasil permainan
+                         if (currentState == State.CROSS_WON) {
+                             showWinnerDialog("Yellow Wins!");
+                         } else if (currentState == State.NOUGHT_WON) {
+                             showWinnerDialog("Blue Wins!");
+                         } else if (currentState == State.DRAW) {
+                             showWinnerDialog("It's a Draw!");
+                         }
+                     }
+                     repaint();
+                 } else {
+                     // Klik tidak valid
+                     System.out.println("Klik tidak valid: di luar lingkaran.");
+                 }
+             } else {
+                 // Klik di luar grid
+                 System.out.println("Klik di luar grid.");
+             }
+         }
+         
+                  
+          
+          
+
       });
   
       // Setup the status bar (JLabel) to display status message
