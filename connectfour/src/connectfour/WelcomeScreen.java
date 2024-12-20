@@ -16,8 +16,14 @@ public class WelcomeScreen extends JFrame {
     public WelcomeScreen() {
         setTitle("Connect Four - Welcome");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 400);
-        setLocationRelativeTo(null);
+        setSize(600, 400); // Set ukuran jendela
+
+        // Lokasi selalu di tengah layar
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (screenSize.width - getWidth()) / 2;
+        int y = (screenSize.height - getHeight()) / 2;
+        setLocation(x, y);
+
         setLayout(null);
 
         // Background Panel with Image
@@ -45,9 +51,8 @@ public class WelcomeScreen extends JFrame {
         startButton.setBounds(250, 120, 100, 40);
         startButton.addActionListener(e -> {
             stopMusic();
-            ConnectFour.play(); 
-            dispose();//welcome screen ditutup
-            playMusic();
+            ConnectFour.play(); // Start ConnectFour game
+            dispose(); // Close welcome screen
         });
         backgroundPanel.add(startButton);
 
@@ -63,7 +68,7 @@ public class WelcomeScreen extends JFrame {
         exitButton.addActionListener(e -> System.exit(0));
         backgroundPanel.add(exitButton);
 
-        // Start music
+        // Start background music
         playMusic();
     }
 
@@ -102,7 +107,7 @@ public class WelcomeScreen extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             WelcomeScreen welcomeScreen = new WelcomeScreen();
-            welcomeScreen.setVisible(true);
+            welcomeScreen.setVisible(true); // Display the welcome screen
         });
     }
 }

@@ -19,8 +19,8 @@ public class ConnectFour extends JPanel {
    public static final String TITLE = "Connect Four";
    public static final Color COLOR_BG = Color.WHITE;
    public static final Color COLOR_BG_STATUS = new Color(216, 216, 216);
-   public static final Color COLOR_CROSS = new Color(239, 105, 80); // Red #EF6950
-   public static final Color COLOR_NOUGHT = new Color(64, 154, 225); // Blue #409AE1
+   public static final Color COLOR_CROSS = Color.RED; // Redrgb(250, 60, 27)
+   public static final Color COLOR_NOUGHT = Color.YELLOW; // Bluergb(250, 227, 17)
    public static final Font FONT_STATUS = new Font("OCR A Extended", Font.PLAIN, 14);
 
    // Define game objects
@@ -29,65 +29,64 @@ public class ConnectFour extends JPanel {
    private Seed currentPlayer; // the current player
    private JLabel statusBar; // for displaying status message
 
+
    /** Constructor to setup the UI and game components */
    public ConnectFour() {
-
       // This JPanel fires MouseEvent
       super.addMouseListener(new MouseAdapter() {
-         @Override
-         public void mouseClicked(MouseEvent e) {
-            int mouseX = e.getX();
-            int mouseY = e.getY();
-            // Get the row and column clicked
-            int row = mouseY / Cell.SIZE;
-            int col = mouseX / Cell.SIZE;
-
-            if (currentState == State.PLAYING) {
-               SoundEffect.EAT_FOOD.play();
-               if (col >= 0 && col < Board.COLS) {
-                  // Look for an empty cell starting from the bottom row
-                  for (int rowI = Board.ROWS - 1; rowI >= 0; rowI--) {
-                     if (board.cells[rowI][col].content == Seed.NO_SEED) {
-                        currentState = board.stepGame(currentPlayer, rowI, col); // Update state
-                        // Switch player
-                        currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
-                        break;
-                     }
+          @Override
+          public void mouseClicked(MouseEvent e) {
+              int mouseX = e.getX();
+              int mouseY = e.getY();
+              // Get the row and column clicked
+              int row = mouseY / Cell.SIZE;
+              int col = mouseX / Cell.SIZE;
+  
+              if (currentState == State.PLAYING) {
+                  SoundEffect.EAT_FOOD.play();
+                  if (col >= 0 && col < Board.COLS) {
+                      // Look for an empty cell starting from the bottom row
+                      for (int rowI = Board.ROWS - 1; rowI >= 0; rowI--) {
+                          if (board.cells[rowI][col].content == Seed.NO_SEED) {
+                              currentState = board.stepGame(currentPlayer, rowI, col); // Update state
+                              // Switch player
+                              currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+                              break;
+                          }
+                      }
                   }
-               }
-            } else {
-               if (currentState == State.CROSS_WON) {
-                  showWinnerDialog("Cross Wins!");
-               } else if (currentState == State.NOUGHT_WON) {
-                  showWinnerDialog("Nought Wins!");
-               } else if (currentState == State.DRAW) {
-                  showWinnerDialog("It's a Draw!");
-               }
-            }
-            repaint();
-         }
+              } else {
+                  if (currentState == State.CROSS_WON) {
+                      showWinnerDialog("Cross Wins!");
+                  } else if (currentState == State.NOUGHT_WON) {
+                      showWinnerDialog("Nought Wins!");
+                  } else if (currentState == State.DRAW) {
+                      showWinnerDialog("It's a Draw!");
+                  }
+              }
+              repaint();
+          }
       });
-
+  
       // Setup the status bar (JLabel) to display status message
       statusBar = new JLabel();
       statusBar.setFont(FONT_STATUS);
       statusBar.setBackground(COLOR_BG_STATUS);
       statusBar.setOpaque(true);
-      statusBar.setPreferredSize(new Dimension(300, 30));
+      statusBar.setPreferredSize(new Dimension(Board.CANVAS_WIDTH, 30)); // Adjust status bar width
       statusBar.setHorizontalAlignment(JLabel.LEFT);
-      statusBar.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 12));
-
+      statusBar.setBorder(null); // Remove border here
+  
       super.setLayout(new BorderLayout());
-      super.add(statusBar, BorderLayout.PAGE_END); // same as SOUTH
-      super.setPreferredSize(new Dimension(Board.CANVAS_WIDTH, Board.CANVAS_HEIGHT + 30));
-      // account for statusBar in height
-      super.setBorder(BorderFactory.createLineBorder(COLOR_BG_STATUS, 2, false));
-
+      super.add(statusBar, BorderLayout.PAGE_END); // Add status bar
+      super.setPreferredSize(new Dimension(Board.CANVAS_WIDTH, Board.CANVAS_HEIGHT + 30)); // Adjust size
+      super.setBorder(null); // Ensure no border on JPanel
+  
       // Set up Game
       initGame();
       newGame();
-   }
-
+  }
+  
    /** Initialize the game (run once) */
    public void initGame() {
       board = new Board(); // allocate the game-board
@@ -149,17 +148,20 @@ public class ConnectFour extends JPanel {
 
    /** The entry "main" method */
    public static void play() {
-      // Run GUI construction codes in Event-Dispatching thread for thread safety
-      javax.swing.SwingUtilities.invokeLater(new Runnable() {
-         public void run() {
-            JFrame frame = new JFrame(TITLE);
-            // Set the content-pane of the JFrame to an instance of main JPanel
-            frame.setContentPane(new ConnectFour());
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.pack();
-            frame.setLocationRelativeTo(null); // center the application window
-            frame.setVisible(true); // show it
-         }
+      javax.swing.SwingUtilities.invokeLater(() -> {
+          JFrame frame = new JFrame(TITLE);
+          frame.setUndecorated(false); // Set to true for no window borders
+          frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+  
+          ConnectFour game = new ConnectFour();
+          frame.setContentPane(game);
+  
+          frame.pack();
+          frame.setSize(Board.CANVAS_WIDTH, Board.CANVAS_HEIGHT + 50); // Adjust height for status bar
+          frame.setResizable(false);
+          frame.setLocationRelativeTo(null); // Center on screen
+          frame.setVisible(true);
       });
-   }
+  }
+  
 }

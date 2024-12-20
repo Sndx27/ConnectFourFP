@@ -34,11 +34,46 @@ public class Cell {
 
    /** Paint itself on the graphics canvas, given the Graphics context */
    public void paint(Graphics g) {
-      // Draw the Seed if it is not empty
-      int x1 = col * SIZE + PADDING;
-      int y1 = row * SIZE + PADDING;
-      if (content == Seed.CROSS || content == Seed.NOUGHT) {
-         g.drawImage(content.getImage(), x1, y1, SEED_SIZE, SEED_SIZE, null);
-      }
+       Graphics2D g2d = (Graphics2D) g;
+   
+       // Aktifkan Anti-Aliasing
+       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+       g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+   
+       // Clear the cell background
+       g2d.setColor(Board.COLOR_BG); // Background color
+       g2d.fillRect(col * SIZE, row * SIZE, SIZE, SIZE);
+   
+       // Center dan radius
+       int centerX = col * SIZE + SIZE / 2;
+       int centerY = row * SIZE + SIZE / 2;
+       int radius = SIZE / 2 - PADDING;
+   
+      //  // Shadow (bayangan)
+      //  g2d.setColor(new Color(0, 0, 0, 50)); // Bayangan transparan
+      //  g2d.fillOval(centerX - radius + 3, centerY - radius + 3, radius * 2, radius * 2);
+   
+       // Lingkaran utama (abu-abu gelap untuk kosong)
+       if (content == Seed.NO_SEED) {
+           g2d.setColor(Color.WHITE);
+           g2d.fillOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
+   
+           // Highlight (pencahayaan)
+           g2d.setColor(new Color(255, 255, 255, 100)); // Highlight transparan
+           g2d.drawOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
+       } else if (content == Seed.CROSS) {
+           // Lingkaran kuning (Player A)
+           g2d.setColor(Color.YELLOW);
+           g2d.fillOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
+       } else if (content == Seed.NOUGHT) {
+           // Lingkaran biru (Player B)
+           g2d.setColor(Color.RED);
+           g2d.fillOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
+       }
    }
+   
+   
+   
+   
+
 }
